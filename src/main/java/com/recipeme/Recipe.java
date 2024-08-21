@@ -170,6 +170,10 @@ public class Recipe {
     public int doesRecipeContainIngredient(String nameOfIngredient) {
         for(Ingredient item : ingredients) {
 
+            if(item.getName().equalsIgnoreCase(nameOfIngredient)) {
+                return 1;
+            }
+
             for(String itemName : item.getWordsOfName()) {
 
                 if (itemName.equalsIgnoreCase(nameOfIngredient)) {
@@ -219,5 +223,27 @@ public class Recipe {
 
         String strFormattedRecipe = formattedRecipe.toString();
         return strFormattedRecipe;
+    }
+
+    /**
+     * Get a String list of ingredients needed for recipe.
+     * 
+     * @return String of ingredients.
+     */
+    public String getStringIngredients() {
+        String returnString = "";
+        int i = 0;
+
+        for(Ingredient ingred : ingredients) {
+            returnString += ingred.getName();
+
+            if(i < ingredients.size() - 1) {
+                returnString += ", ";
+            }
+
+            i += 1;
+        }
+
+        return returnString;
     }
 }
