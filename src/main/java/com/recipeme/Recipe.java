@@ -1,9 +1,11 @@
 package com.recipeme;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Serializable {
     
+    private final static long serialVersionUID = 1L;
     private String name;
     private int difficulty;
     private ArrayList<Ingredient> ingredients;

@@ -1,10 +1,12 @@
 package com.recipeme;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Ingredient {
+public class Ingredient implements Serializable {
     
+    private final static long serialVersionUID = 1L;
     private String name;
     private String measurement;
     private double quantity;
