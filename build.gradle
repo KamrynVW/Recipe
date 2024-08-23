@@ -8,7 +8,7 @@ repositories {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.recipeme.RecipeMe'
+        attributes 'Main-Class': 'com.textui.TextUI'
     }
 }
 
