@@ -26,7 +26,7 @@ public class TextUI {
 
     public static void main(String[] args) {
         //Load the list of recipes from the data file
-        loadListFromFile("data.ser");
+        loadListFromFile("recipeData.ser");
         System.out.println("Welcome to RecipeMe. Type 'help' for commands.");
             
         //Until requesting exit, repeat options
@@ -49,7 +49,7 @@ public class TextUI {
                 deleteRecipe();
             } else if(decision.equalsIgnoreCase("save")) {
                 //Save recipe list
-                saveListToFile("data.ser");
+                saveListToFile("recipeData.ser");
             } else if(decision.equalsIgnoreCase("exit")) {
                 //Exit the program
                 System.out.println(GREEN + "Exiting..." + RESET);
