@@ -9,7 +9,7 @@ public class Ingredient implements Serializable {
     private final static long serialVersionUID = 1L;
     private String name;
     private String measurement;
-    private double quantity;
+    private String quantity;
 
     /**
      * Default constructor. 
@@ -25,7 +25,7 @@ public class Ingredient implements Serializable {
      * @param unit The unit used to measure the ingredient
      * @param total The amount of the unit for the ingredient
      */
-    public Ingredient(String nameOfIngredient, String unit, double total) {
+    public Ingredient(String nameOfIngredient, String unit, String total) {
         this.name = nameOfIngredient;
         this.measurement = unit;
         this.quantity = total;
@@ -54,7 +54,7 @@ public class Ingredient implements Serializable {
      * 
      * @return Quantity of ingredient measurement.
      */
-    public double getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
@@ -81,7 +81,7 @@ public class Ingredient implements Serializable {
      * 
      * @param quantity Quantity of ingredient.
      */
-    public void setQuantity(double quantity) {
+    public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
 

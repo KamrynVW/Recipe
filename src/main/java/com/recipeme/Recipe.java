@@ -192,42 +192,6 @@ public class Recipe implements Serializable {
     }
 
     /**
-     * Return a formatted version of the Recipe object.
-     * 
-     * @return String version of recipe.
-     */
-    public String getFormattedRecipe() {
-        StringBuilder formattedRecipe = new StringBuilder();
-        formattedRecipe.append("Name: ").append(this.name).append("\nNeeds: ");
-
-        for(int i = 0; i < this.ingredients.size(); i++) {
-            if(this.ingredients.get(i).getQuantity() % 1 == 0) {
-                formattedRecipe.append((int)this.ingredients.get(i).getQuantity()).append(" ").append(this.ingredients.get(i).getMeasurement()).append(" ").append(this.ingredients.get(i).getName());
-            } else {
-                formattedRecipe.append(this.ingredients.get(i).getQuantity()).append(" ").append(this.ingredients.get(i).getMeasurement()).append(" ").append(this.ingredients.get(i).getName());
-            }
-
-            if(i < this.ingredients.size() - 1) {
-                formattedRecipe.append(", ");
-            }
-
-        }
-
-        formattedRecipe.append("\n").append("Instructions:\n");
-
-        for(int j = 0; j < numOfInstructions; j++) {
-            formattedRecipe.append(this.instructions.get(j));
-
-            if(j < numOfInstructions - 1) {
-                formattedRecipe.append("\n");
-            }
-        }
-
-        String strFormattedRecipe = formattedRecipe.toString();
-        return strFormattedRecipe;
-    }
-
-    /**
      * Get a String list of ingredients needed for recipe.
      * 
      * @return String of ingredients.

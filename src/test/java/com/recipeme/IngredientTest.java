@@ -10,14 +10,14 @@ public class IngredientTest {
     
     private String name;
     private String measurement;
-    private float quantity;
+    private String quantity;
     private Ingredient ingredient;
 
     @BeforeEach
     public void setUp() {
         name = "Ground Beef";
         measurement = "Grams";
-        quantity = 500;
+        quantity = "500";
         ingredient = new Ingredient(name, measurement, quantity);
     }
 
@@ -33,7 +33,7 @@ public class IngredientTest {
 
     @Test
     public void getCorrectQuantity() {
-        assertEquals(500, ingredient.getQuantity());
+        assertEquals("500", ingredient.getQuantity());
     }
 
     @Test
@@ -54,10 +54,10 @@ public class IngredientTest {
 
     @Test
     public void setCorrectQuantity() {
-        float newQuantity = 1;
+        String newQuantity = "1";
         ingredient.setQuantity(newQuantity);
 
-        assertEquals(1, ingredient.getQuantity());
+        assertEquals("1", ingredient.getQuantity());
     }
 
     @Test

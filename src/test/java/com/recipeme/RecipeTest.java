@@ -15,10 +15,10 @@ public class RecipeTest {
         String name = "Meatballs";
         int difficulty = 3;
         
-        Ingredient one = new Ingredient("Ground Beef", "Grams", 500);
-        Ingredient two = new Ingredient("Breadcrumbs", "Cups", 0.25);
-        Ingredient three = new Ingredient("Seasoning Salt", "Tablespoons", 3);
-        Ingredient four = new Ingredient("Pasta Sauce", "Jar", 1);
+        Ingredient one = new Ingredient("Ground Beef", "Grams", "500");
+        Ingredient two = new Ingredient("Breadcrumbs", "Cups", "1/4");
+        Ingredient three = new Ingredient("Seasoning Salt", "Tablespoons", "3");
+        Ingredient four = new Ingredient("Pasta Sauce", "Jar", "1");
         ArrayList<Ingredient> ingredients = new ArrayList<>();
 
         ingredients.add(one);
@@ -89,9 +89,9 @@ public class RecipeTest {
 
     @Test
     public void correctlySetIngredients() {
-        Ingredient one = new Ingredient("Ground Beef", "Grams", 500);
-        Ingredient two = new Ingredient("Breadcrumbs", "Cups", 0.25);
-        Ingredient three = new Ingredient("Pasta Sauce", "Jars", 1);
+        Ingredient one = new Ingredient("Ground Beef", "Grams", "500");
+        Ingredient two = new Ingredient("Breadcrumbs", "Cups", "1/4");
+        Ingredient three = new Ingredient("Pasta Sauce", "Jars", "1");
         ArrayList<Ingredient> ingredients = new ArrayList<>();
 
         ingredients.add(one);
@@ -207,27 +207,6 @@ public class RecipeTest {
         recipe.setInstructions(emptyList);
 
         assertEquals(0, recipe.getNumOfInstructions());
-    }
-
-    @Test
-    public void correctlyFormatsInstructions() {
-        String formattedInstructions = "Name: Meatballs\nNeeds: 500 Grams Ground Beef, 0.25 Cups Breadcrumbs, 3 Tablespoons Seasoning Salt, 1 Jar Pasta Sauce\n";
-        formattedInstructions += "Instructions:\n1. Mix the ground beef, breadcrumbs, and seasoning salt.\n2. Roll mix into balls and put into pan over medium heat.\n";
-        formattedInstructions += "3. When brown on all sides, pour desired amount of pasta sauce into pan and reduce heat to medium-low.\n4. Let simmer for 7 minutes or until brown throughout. Serve and enjoy!";
-
-        assertEquals(formattedInstructions, recipe.getFormattedRecipe());
-    }
-
-    @Test
-    public void correctlyFormatsEmptyInstructions() {
-        ArrayList<String> emptyList = new ArrayList<>();
-
-        recipe.setInstructions(emptyList);
-
-        String formattedInstructions = "Name: Meatballs\nNeeds: 500 Grams Ground Beef, 0.25 Cups Breadcrumbs, 3 Tablespoons Seasoning Salt, 1 Jar Pasta Sauce\n";
-        formattedInstructions += "Instructions:\n";
-
-        assertEquals(formattedInstructions, recipe.getFormattedRecipe());
     }
     
 }
