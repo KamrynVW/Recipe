@@ -26,7 +26,7 @@ public class RecipeMeGUI extends JFrame {
         
         /* Creation Page */
 
-        GUI_CreationPage creationPanel = new GUI_CreationPage();
+        GUI_CreationPage creationPanel = new GUI_CreationPage(() -> lyt.show(mainPanel, "base"));
         
         
 
@@ -45,5 +45,6 @@ public class RecipeMeGUI extends JFrame {
         // Action Listener definitions
         landPagePanel.getStartButton().addActionListener(_ -> lyt.show(mainPanel, "base"));
         basePage.getNewButton().addActionListener(_ -> lyt.show(mainPanel, "create"));
+        creationPanel.getBackButton().addActionListener(_ -> lyt.show(mainPanel, "base"));
     }
 }

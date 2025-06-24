@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -24,9 +25,18 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import com.recipeme.Ingredient;
+import com.recipeme.Recipe;
+
 public class GUI_CreationPage extends JPanel {
 
-    public GUI_CreationPage() {
+    private final JButton submitButton;
+    private final JButton backButton;
+    private Recipe newRecipe;
+    private final Runnable onCreateDone;
+
+    public GUI_CreationPage(Runnable onCreationDone) {
+        this.onCreateDone = onCreationDone;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBackground(new Color(0x27282c));
         
@@ -347,7 +357,7 @@ public class GUI_CreationPage extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         buttonPanel.setBackground(new Color(0x27282c));
         
-        JButton backButton = new JButton("<- Back");
+        backButton = new JButton("<- Back");
         backButton.setFont(new Font("Dialog", Font.BOLD, 20));
         backButton.setForeground(new Color(0xFF5F1F));
         backButton.setBackground(Color.DARK_GRAY);
@@ -355,7 +365,7 @@ public class GUI_CreationPage extends JPanel {
         backButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 2), new EmptyBorder(10, 20, 10, 20)));
         backButton.setFocusPainted(false);
 
-        JButton submitButton = new JButton("Create ->");
+        submitButton = new JButton("Create ->");
         submitButton.setFont(new Font("Dialog", Font.BOLD, 20));
         submitButton.setForeground(new Color(0xFF5F1F));
         submitButton.setBackground(Color.DARK_GRAY);
@@ -382,6 +392,155 @@ public class GUI_CreationPage extends JPanel {
         this.add(instructionPanelHolder);
         this.add(Box.createVerticalStrut(60));
         this.add(buttonPanel);
+
+        // Action Listeners for recipe creation/deletion
+        submitButton.addActionListener(_ -> {
+            
+            // Variable set-up for recipe creation
+            String nameOfRecipe = recipeName.getText();
+            int difficulty;
+            ArrayList<Ingredient> ingredients = new ArrayList<>();
+            ArrayList<String> instructions = new ArrayList<>();
+
+            int textFieldCounter = 1;
+
+            // Determine difficulty by button selected
+            if(oneButton.isSelected()) {
+                difficulty = 1;
+            } else if(twoButton.isSelected()) {
+                difficulty = 2;
+            } else if(threeButton.isSelected()) {
+                difficulty = 3;
+            } else if(fourButton.isSelected()) {
+                difficulty = 4;
+            } else if(fiveButton.isSelected()) {
+                difficulty = 5;
+            } else {
+                difficulty = 1;
+            }
+
+            // Loop through cards of ingredients and place values in Ingredient class instance
+            for(Component card : valuesPanelCardHolder.getComponents()) {
+                if(card instanceof JPanel cardAsPanel) {
+                    Ingredient ingred = new Ingredient();
+                    for(Component comp : cardAsPanel.getComponents()) {
+                        if(comp instanceof JTextField text) {
+                            switch (textFieldCounter) {
+                                case 1 -> {
+                                    textFieldCounter += 1;
+                                    ingred.setQuantity(text.getText());
+                                }
+                                case 2 -> {
+                                    textFieldCounter += 1;
+                                    ingred.setMeasurement(text.getText());
+                                }
+                                case 3 -> {
+                                    textFieldCounter = 1;
+                                    ingred.setName(text.getText());
+                                }
+                            }
+                        }
+                    }
+
+                    // Add the ingredient to the list
+                    ingredients.add(ingred);
+                }
+            }
+
+            // Iterate through cards of the instruction panel and get instructions
+            for(Component card : instructionPanelCardHolder.getComponents()) {
+                if(card instanceof JPanel cardAsPanel) {
+                    for(Component comp : cardAsPanel.getComponents()) {
+                        if(comp instanceof JTextField text) {
+                            instructions.add(text.getText());
+                        }
+                    }
+                }
+            }
+
+            // Create new recipe with fetched instructions
+            newRecipe = new Recipe(nameOfRecipe, ingredients, difficulty, instructions);
+            
+            // Wipe recipe name and difficulty rating
+            recipeName.setText("");
+            ratingGroup.clearSelection();
+            oneButton.setIcon(empty);
+            twoButton.setIcon(empty);
+            threeButton.setIcon(empty);
+            fourButton.setIcon(empty);
+
+            // Remove all cards, reset counter/pos, and create new base card
+            valuesPanelCardHolder.removeAll();
+            ingredCardCounter[0] = 1;
+            ingredCardPos[0] = 1;
+            ingredCountLabel.setText("Ingredient 1");
+            JPanel newCard = new JPanel();
+            newCard.setBackground(new Color(0x27282c));
+            newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
+            newCard.add(createCardComponent("Qty...", 85));
+            newCard.add(createCardComponent("Measure...", 130));
+            newCard.add(createCardComponent("Ingredient...", 200));
+
+            valuesPanelCardHolder.add(newCard, "card1");
+            valuesLyt.show(valuesPanelCardHolder, "card1");
+
+            // Remove all cards, reset counter/pos, and create new base card
+            instructionPanelCardHolder.removeAll();
+            instrCardCounter[0] = 1;
+            instrCardPos[0] = 1;
+            instructionCountLabel.setText("Instruction 1");
+            JPanel newCard2 = new JPanel();
+            newCard2.setBackground(new Color(0x27282c));
+            newCard2.setLayout(new BoxLayout(newCard2, BoxLayout.X_AXIS));
+            newCard2.add(createInstructionCard());
+                
+            instructionPanelCardHolder.add(newCard2, "card1");
+            instructionLyt.show(instructionPanelCardHolder, "card1");
+
+            if(onCreateDone != null) {
+                onCreateDone.run();
+            }
+        });
+
+        backButton.addActionListener(_ -> {
+
+            // Wipe recipe name and difficulty rating
+            recipeName.setText("");
+            ratingGroup.clearSelection();
+            oneButton.setIcon(empty);
+            twoButton.setIcon(empty);
+            threeButton.setIcon(empty);
+            fourButton.setIcon(empty);
+
+            // Remove all cards, reset counter/pos, and create new base card
+            valuesPanelCardHolder.removeAll();
+            ingredCardCounter[0] = 1;
+            ingredCardPos[0] = 1;
+            ingredCountLabel.setText("Ingredient 1");
+            JPanel newCard = new JPanel();
+            newCard.setBackground(new Color(0x27282c));
+            newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
+            newCard.add(createCardComponent("Qty...", 85));
+            newCard.add(createCardComponent("Measure...", 130));
+            newCard.add(createCardComponent("Ingredient...", 200));
+
+            valuesPanelCardHolder.add(newCard, "card1");
+            valuesLyt.show(valuesPanelCardHolder, "card1");
+
+            // Remove all cards, reset counter/pos, and create new base card
+            instructionPanelCardHolder.removeAll();
+            instrCardCounter[0] = 1;
+            instrCardPos[0] = 1;
+            instructionCountLabel.setText("Instruction 1");
+            JPanel newCard2 = new JPanel();
+            newCard2.setBackground(new Color(0x27282c));
+            newCard2.setLayout(new BoxLayout(newCard2, BoxLayout.X_AXIS));
+            newCard2.add(createInstructionCard());
+                
+            instructionPanelCardHolder.add(newCard2, "card1");
+            instructionLyt.show(instructionPanelCardHolder, "card1");
+
+        });
     }
 
     private Component createCardComponent(String purpose, int size) {
@@ -413,5 +572,16 @@ public class GUI_CreationPage extends JPanel {
         
         return comp;
     }
+
+    public JButton getCreateButton() {
+        return submitButton;
+    }
     
+    public JButton getBackButton() {
+        return backButton;
+    }
+
+    public Recipe getRecipes() {
+        return newRecipe;
+    }
 }
