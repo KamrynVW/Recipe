@@ -26,7 +26,7 @@ public class RecipeMeGUI extends JFrame {
         
         /* Creation Page */
 
-        GUI_CreationPage creationPanel = new GUI_CreationPage(() -> lyt.show(mainPanel, "base"));
+        GUI_CreationPage creationPanel = new GUI_CreationPage(() -> {lyt.show(mainPanel, "base"); basePage.updateRecipes();});
         
         
 

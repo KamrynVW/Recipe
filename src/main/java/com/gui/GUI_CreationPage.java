@@ -27,12 +27,13 @@ import javax.swing.border.LineBorder;
 
 import com.recipeme.Ingredient;
 import com.recipeme.Recipe;
+import com.recipeme.Serialize;
 
 public class GUI_CreationPage extends JPanel {
 
     private final JButton submitButton;
     private final JButton backButton;
-    private Recipe newRecipe;
+    private ArrayList<Recipe> recipes;
     private final Runnable onCreateDone;
 
     public GUI_CreationPage(Runnable onCreationDone) {
@@ -459,7 +460,10 @@ public class GUI_CreationPage extends JPanel {
             }
 
             // Create new recipe with fetched instructions
-            newRecipe = new Recipe(nameOfRecipe, ingredients, difficulty, instructions);
+            Recipe newRecipe = new Recipe(nameOfRecipe, ingredients, difficulty, instructions);
+            recipes = Serialize.loadRecipeList();
+            recipes.add(newRecipe);
+            Serialize.saveRecipeList(recipes);
             
             // Wipe recipe name and difficulty rating
             recipeName.setText("");
@@ -581,7 +585,5 @@ public class GUI_CreationPage extends JPanel {
         return backButton;
     }
 
-    public Recipe getRecipes() {
-        return newRecipe;
-    }
+
 }
