@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 
 import javax.swing.Box;
@@ -15,12 +16,14 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -35,17 +38,19 @@ public class GUI_CreationPage extends JPanel {
     private final JButton backButton;
     private ArrayList<Recipe> recipes;
     private final Runnable onCreateDone;
-
+    
     public GUI_CreationPage(Runnable onCreationDone) {
         this.onCreateDone = onCreationDone;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setBackground(new Color(0x27282c));
-        
+        SwingUtilities.invokeLater(() -> {
+            bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
+        });
+
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-        titlePanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(titlePanel);
         JLabel creationTitleLabel = new JLabel("Recipe Creation");
-        creationTitleLabel.setForeground(new Color(0xFF5F1F));
+        bindTextToColorManager(creationTitleLabel);
         creationTitleLabel.setFont(new Font("Dialog", Font.BOLD, 40));
         creationTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titlePanel.add(creationTitleLabel);
@@ -53,7 +58,7 @@ public class GUI_CreationPage extends JPanel {
         // Creation of recipe name input box
         JPanel recipeNamePanel = new JPanel();
         recipeNamePanel.setLayout(new BoxLayout(recipeNamePanel, BoxLayout.Y_AXIS));
-        recipeNamePanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(recipeNamePanel);
         JLabel nameLabel = new JLabel("Recipe Name:");
         nameLabel.setFont(new Font("Dialog", Font.PLAIN, 25));
         nameLabel.setForeground(Color.WHITE);
@@ -70,30 +75,30 @@ public class GUI_CreationPage extends JPanel {
         // Star rating creation
         JPanel recipeRatingPanel = new JPanel();
         recipeRatingPanel.setLayout(new BoxLayout(recipeRatingPanel, BoxLayout.X_AXIS));
-        recipeRatingPanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(recipeRatingPanel);
         JLabel ratingLabel = new JLabel("Difficulty:");
         ratingLabel.setForeground(Color.WHITE);
 
         ImageIcon empty = new ImageIcon("empty_star.png");
         ImageIcon full = new ImageIcon("full_star.png");
         JRadioButton oneButton = new JRadioButton();
-        oneButton.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(oneButton);
         oneButton.setIcon(empty);
         oneButton.setSelectedIcon(full);
         JRadioButton twoButton = new JRadioButton();
-        twoButton.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(twoButton);
         twoButton.setIcon(empty);
         twoButton.setSelectedIcon(full);
         JRadioButton threeButton = new JRadioButton();
-        threeButton.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(threeButton);
         threeButton.setIcon(empty);
         threeButton.setSelectedIcon(full);
         JRadioButton fourButton = new JRadioButton();
-        fourButton.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(fourButton);
         fourButton.setIcon(empty);
         fourButton.setSelectedIcon(full);
         JRadioButton fiveButton = new JRadioButton();
-        fiveButton.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(fiveButton);
         fiveButton.setIcon(empty);
         fiveButton.setSelectedIcon(full);
 
@@ -154,7 +159,7 @@ public class GUI_CreationPage extends JPanel {
         // Create holder panel to align typing boxes and label
         JPanel ingredPanelHolder = new JPanel();
         ingredPanelHolder.setLayout(new BoxLayout(ingredPanelHolder, BoxLayout.Y_AXIS));
-        ingredPanelHolder.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(ingredPanelHolder);
 
         // Create label for ingredient number being viewed
         JLabel ingredCountLabel = new JLabel("Ingredient " + ingredCardPos[0]);
@@ -165,7 +170,7 @@ public class GUI_CreationPage extends JPanel {
 
         // Create panel and buttons for transitions between ingredients
         JPanel ingredPanel = new JPanel();
-        ingredPanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(ingredPanel);
         ingredPanel.setLayout(new BoxLayout(ingredPanel, BoxLayout.X_AXIS));
         JButton backButtonIngred = new JButton("Prev");
         backButtonIngred.setFont(buttonFont);
@@ -178,11 +183,11 @@ public class GUI_CreationPage extends JPanel {
         
         // Create panels for the input boxes
         JPanel valuesPanelCardHolder = new JPanel();
-        valuesPanelCardHolder.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(valuesPanelCardHolder);
         CardLayout valuesLyt = new CardLayout();
         valuesPanelCardHolder.setLayout(valuesLyt);
         JPanel valuesPanel = new JPanel();
-        valuesPanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(valuesPanel);
         valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.X_AXIS));
 
         // Add the back button
@@ -229,7 +234,7 @@ public class GUI_CreationPage extends JPanel {
                 ingredCountLabel.setText("Ingredient " + ingredCardPos[0]);
 
                 JPanel newCard = new JPanel();
-                newCard.setBackground(new Color(0x27282c));
+                bindBackgroundToColorManager(newCard);
                 newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
                 newCard.add(createCardComponent("Qty...", 85));
                 newCard.add(createCardComponent("Measure...", 130));
@@ -257,7 +262,7 @@ public class GUI_CreationPage extends JPanel {
         // Create holder panel to align typing boxes and label
         JPanel instructionPanelHolder = new JPanel();
         instructionPanelHolder.setLayout(new BoxLayout(instructionPanelHolder, BoxLayout.Y_AXIS));
-        instructionPanelHolder.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(instructionPanelHolder);
 
         // Create label for ingredient number being viewed
         JLabel instructionCountLabel = new JLabel("Instruction " + instrCardPos[0]);
@@ -268,7 +273,7 @@ public class GUI_CreationPage extends JPanel {
 
         // Create panel and buttons for transitions between ingredients
         JPanel instructionPanel = new JPanel();
-        instructionPanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(instructionPanel);
         instructionPanel.setLayout(new BoxLayout(instructionPanel, BoxLayout.X_AXIS));
         JButton backButtonInstr = new JButton("Prev");
         backButtonInstr.setFont(buttonFont);
@@ -281,11 +286,11 @@ public class GUI_CreationPage extends JPanel {
         
         // Create panels for the input boxes
         JPanel instructionPanelCardHolder = new JPanel();
-        instructionPanelCardHolder.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(instructionPanelCardHolder);
         CardLayout instructionLyt = new CardLayout();
         instructionPanelCardHolder.setLayout(instructionLyt);
         JPanel instructionValuesPanel = new JPanel();
-        instructionValuesPanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(instructionValuesPanel);
         instructionValuesPanel.setLayout(new BoxLayout(instructionValuesPanel, BoxLayout.X_AXIS));
 
         // Add the back button
@@ -336,7 +341,7 @@ public class GUI_CreationPage extends JPanel {
                 instructionCountLabel.setText("Instruction " + instrCardPos[0]);
 
                 JPanel newCard = new JPanel();
-                newCard.setBackground(new Color(0x27282c));
+                bindBackgroundToColorManager(newCard);
                 newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
                 newCard.add(createInstructionCard());
                 
@@ -356,11 +361,11 @@ public class GUI_CreationPage extends JPanel {
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        buttonPanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(buttonPanel);
         
         backButton = new JButton("<- Back");
         backButton.setFont(new Font("Dialog", Font.BOLD, 20));
-        backButton.setForeground(new Color(0xFF5F1F));
+        bindTextToColorManager(backButton);
         backButton.setBackground(Color.DARK_GRAY);
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 2), new EmptyBorder(10, 20, 10, 20)));
@@ -368,7 +373,7 @@ public class GUI_CreationPage extends JPanel {
 
         submitButton = new JButton("Create ->");
         submitButton.setFont(new Font("Dialog", Font.BOLD, 20));
-        submitButton.setForeground(new Color(0xFF5F1F));
+        bindTextToColorManager(submitButton);
         submitButton.setBackground(Color.DARK_GRAY);
         submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 2), new EmptyBorder(10, 20, 10, 20)));
@@ -479,7 +484,7 @@ public class GUI_CreationPage extends JPanel {
             ingredCardPos[0] = 1;
             ingredCountLabel.setText("Ingredient 1");
             JPanel newCard = new JPanel();
-            newCard.setBackground(new Color(0x27282c));
+            bindBackgroundToColorManager(newCard);
             newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
             newCard.add(createCardComponent("Qty...", 85));
             newCard.add(createCardComponent("Measure...", 130));
@@ -494,7 +499,7 @@ public class GUI_CreationPage extends JPanel {
             instrCardPos[0] = 1;
             instructionCountLabel.setText("Instruction 1");
             JPanel newCard2 = new JPanel();
-            newCard2.setBackground(new Color(0x27282c));
+            bindBackgroundToColorManager(newCard2);
             newCard2.setLayout(new BoxLayout(newCard2, BoxLayout.X_AXIS));
             newCard2.add(createInstructionCard());
                 
@@ -522,7 +527,7 @@ public class GUI_CreationPage extends JPanel {
             ingredCardPos[0] = 1;
             ingredCountLabel.setText("Ingredient 1");
             JPanel newCard = new JPanel();
-            newCard.setBackground(new Color(0x27282c));
+            bindBackgroundToColorManager(newCard);
             newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
             newCard.add(createCardComponent("Qty...", 85));
             newCard.add(createCardComponent("Measure...", 130));
@@ -537,7 +542,7 @@ public class GUI_CreationPage extends JPanel {
             instrCardPos[0] = 1;
             instructionCountLabel.setText("Instruction 1");
             JPanel newCard2 = new JPanel();
-            newCard2.setBackground(new Color(0x27282c));
+            bindBackgroundToColorManager(newCard2);
             newCard2.setLayout(new BoxLayout(newCard2, BoxLayout.X_AXIS));
             newCard2.add(createInstructionCard());
                 
@@ -546,6 +551,8 @@ public class GUI_CreationPage extends JPanel {
 
         });
     }
+
+
 
     private Component createCardComponent(String purpose, int size) {
         JTextField comp = new JTextField(purpose);
@@ -585,5 +592,25 @@ public class GUI_CreationPage extends JPanel {
         return backButton;
     }
 
+    public static void bindBackgroundToColorManager(JComponent component) {
+        component.setBackground(GUIColors.INSTANCE.getBackgroundColor());
 
+        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if ("backgroundColor".equals(evt.getPropertyName())) {
+                component.setBackground((Color) evt.getNewValue());
+                component.repaint();
+            }
+        });
+    }
+
+    public static void bindTextToColorManager(JComponent component) {
+        component.setForeground(GUIColors.INSTANCE.getTextColor());
+
+        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if ("textColor".equals(evt.getPropertyName())) {
+                component.setForeground((Color) evt.getNewValue());
+                component.repaint();
+            }
+        });
+    }
 }

@@ -4,19 +4,23 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import com.recipeme.Ingredient;
@@ -26,22 +30,34 @@ import com.recipeme.Serialize;
 public class GUI_BasePage extends JPanel {
 
     private final JButton newButton;
+    private final JButton settingsButton;
     private final JPanel recipeScrollPanel;
     private final JScrollPane scroll;
     private ArrayList<Recipe> listOfRecipes;
     private final Border recipeListingBorder = BorderFactory.createLineBorder(new Color(0xFF5F1F), 2);
-
+    
     public GUI_BasePage() {
         
         // Layout setup
         this.setLayout(new BorderLayout());
-        this.setBackground(new Color(0x27282c));
+        SwingUtilities.invokeLater(() -> {
+            bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
+        });
         Border topBarBorder = BorderFactory.createLineBorder(Color.GRAY, 1);
 
         // Creation of top panel including search bar and buttons
         JPanel topBar = new JPanel();
-        topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
-        topBar.setBackground(new Color(0x27282c));
+        topBar.setLayout(new BorderLayout());
+        bindBackgroundToColorManager(topBar);
+
+        //Sub-panels for top bar
+        JPanel topBarSearch = new JPanel();
+        bindBackgroundToColorManager(topBarSearch);
+        topBarSearch.setLayout(new BoxLayout(topBarSearch, BoxLayout.X_AXIS));
+
+        JPanel topBarButtons = new JPanel();
+        bindBackgroundToColorManager(topBarButtons);
+        topBarButtons.setLayout(new BoxLayout(topBarButtons, BoxLayout.X_AXIS));
 
         // Creation of search field
         JTextField searchField = new JTextField();
@@ -50,6 +66,7 @@ public class GUI_BasePage extends JPanel {
         searchField.setBackground(Color.DARK_GRAY);
         searchField.setText("Enter ingredients here (with '!' before item to exclude)...");
         searchField.setBorder(topBarBorder);
+        searchField.setMaximumSize(new Dimension(7000, 100));
 
         searchField.addFocusListener(new FocusListener() {
             @Override
@@ -67,31 +84,53 @@ public class GUI_BasePage extends JPanel {
         });
         
         // Creation of search button
-        JButton searchButton = new JButton("Search");
-        searchButton.setFont(new Font("Dialog", Font.PLAIN, 30));
-        searchButton.setForeground(new Color(0xFF5F1F));
+        JButton searchButton = new JButton("\uD83D\uDD0E");
+        searchButton.setFont(new Font("Dialog", Font.PLAIN, 35));
+        bindTextToColorManager(searchButton);
         searchButton.setBackground(Color.DARK_GRAY);
         searchButton.setFocusPainted(false);
         searchButton.setBorder(topBarBorder);
         
+        searchButton.addActionListener(_ -> {
+            updateRecipes(searchField.getText());
+            GUIColors.INSTANCE.setBackgroundColor(Color.BLACK);
+            GUIColors.INSTANCE.setTextColor(Color.CYAN);
+        });
+        
         // Creation of new recipe button
-        newButton = new JButton("New");
-        newButton.setFont(new Font("Dialog", Font.PLAIN, 30));
-        newButton.setForeground(new Color(0xFF5F1F));
+        newButton = new JButton("\u271A");
+        newButton.setFont(new Font("Dialog", Font.PLAIN, 35));
+        bindTextToColorManager(newButton);
         newButton.setBackground(Color.DARK_GRAY);
         newButton.setFocusPainted(false);
         newButton.setBorder(topBarBorder);
 
-        // Add buttons and fields with specific order to create appropriate bar
-        topBar.add(searchField);
-        topBar.add(searchButton);
-        topBar.add(Box.createHorizontalGlue());
-        topBar.add(newButton);
+        //ImageIcon gear = new ImageIcon("gear.png");
+        settingsButton = new JButton("\u2699");
+        settingsButton.setFont(new Font("Dialog", Font.PLAIN, 35));
+        settingsButton.setMargin(new Insets(10, 20, 10, 20));
+        bindTextToColorManager(settingsButton);
+        settingsButton.setBackground(Color.DARK_GRAY);
+        settingsButton.setFocusPainted(false);
+        settingsButton.setBorder(topBarBorder);
+
+        // Add components to sub-panels
+        topBarSearch.add(searchField);
+        topBarSearch.add(Box.createHorizontalStrut(2));
+        topBarSearch.add(searchButton);
+
+        topBarButtons.add(newButton);
+        topBarButtons.add(Box.createHorizontalStrut(3));
+        topBarButtons.add(settingsButton);
+
+        // Add sub-panels to top bar panel
+        topBar.add(topBarSearch, BorderLayout.WEST);
+        topBar.add(topBarButtons, BorderLayout.EAST);
         this.add(topBar, BorderLayout.NORTH);
 
         recipeScrollPanel = new JPanel();
         recipeScrollPanel.setLayout(new BoxLayout(recipeScrollPanel, BoxLayout.Y_AXIS));
-        //recipeScrollPanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(recipeScrollPanel);
 
         scroll = new JScrollPane(recipeScrollPanel);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -107,13 +146,17 @@ public class GUI_BasePage extends JPanel {
         return newButton;
     }
 
+    public JButton getSettingsButton() {
+        return settingsButton;
+    }
+
     private void addNewRecipe(Recipe rec) {
         // Place recipes into the scroll pane
 
         // Panel set-up
         JPanel listedRecipePanel = new JPanel();
         listedRecipePanel.setBorder(recipeListingBorder);
-        listedRecipePanel.setBackground(new Color(0x27282c));
+        bindBackgroundToColorManager(listedRecipePanel);
         listedRecipePanel.setLayout(new BoxLayout(listedRecipePanel, BoxLayout.Y_AXIS));
         listedRecipePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 75));
 
@@ -140,9 +183,9 @@ public class GUI_BasePage extends JPanel {
         }
 
         titleOfRecipe.setFont(new Font("Dialog", Font.BOLD, 35));
-        titleOfRecipe.setForeground(new Color(0xFF5F1F));
+        bindTextToColorManager(titleOfRecipe);
         listOfIngredients.setFont(new Font("Dialog", Font.PLAIN, 20));
-        listOfIngredients.setForeground(new Color(0xFF5F1F));
+        bindTextToColorManager(listOfIngredients);
 
         listedRecipePanel.add(titleOfRecipe);
         listedRecipePanel.add(listOfIngredients);
@@ -154,8 +197,65 @@ public class GUI_BasePage extends JPanel {
         // Load recipes from the save data (to create concurrency) and add all to pane
         listOfRecipes = Serialize.loadRecipeList();
 
+        recipeScrollPanel.removeAll();
+        recipeScrollPanel.revalidate();
+        recipeScrollPanel.repaint();
+
         for(Recipe rec : listOfRecipes) {
             addNewRecipe(rec);
         }
+    }
+
+    public final void updateRecipes(String searchTerms) {
+
+        boolean showRecipe = true;
+        listOfRecipes = Serialize.loadRecipeList();
+
+        recipeScrollPanel.removeAll();
+        recipeScrollPanel.revalidate();
+        recipeScrollPanel.repaint();  
+        
+        ArrayList<String> searchTermsSeparated = new ArrayList<>();
+
+        for(String str : searchTerms.split(",")) {
+            searchTermsSeparated.add(str.trim());
+        }
+
+        for(Recipe rec : listOfRecipes) {
+            for(String term : searchTermsSeparated) {
+                if(rec.doesRecipeContainIngredient(term) != 1) {
+                    showRecipe = false;
+                    break;
+                }
+            }
+
+            if(showRecipe) {
+                addNewRecipe(rec);
+            } else {
+                showRecipe = true;
+            }
+        }
+    }
+
+    public static void bindBackgroundToColorManager(JComponent component) {
+        component.setBackground(GUIColors.INSTANCE.getBackgroundColor());
+
+        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if ("backgroundColor".equals(evt.getPropertyName())) {
+                component.setBackground((Color) evt.getNewValue());
+                component.repaint();
+            }
+        });
+    }
+
+    public static void bindTextToColorManager(JComponent component) {
+        component.setForeground(GUIColors.INSTANCE.getTextColor());
+
+        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            if ("textColor".equals(evt.getPropertyName())) {
+                component.setForeground((Color) evt.getNewValue());
+                component.repaint();
+            }
+        });
     }
 }

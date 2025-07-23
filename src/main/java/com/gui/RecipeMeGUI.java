@@ -10,9 +10,6 @@ public class RecipeMeGUI extends JFrame {
 
     public RecipeMeGUI() {
 
-        // Color and Card Layout definitions for future use
-        //Color bg = new Color(0x27282c);
-        //Color txt = new Color(0xFF5F1F);
         CardLayout lyt = new CardLayout();
         JPanel mainPanel = new JPanel(lyt);
 
@@ -28,8 +25,6 @@ public class RecipeMeGUI extends JFrame {
 
         GUI_CreationPage creationPanel = new GUI_CreationPage(() -> {lyt.show(mainPanel, "base"); basePage.updateRecipes();});
         
-        
-
         // Adding all panels to the main CardLayout panel
         mainPanel.add(landPagePanel, "landing");
         mainPanel.add(basePage, "base");
@@ -37,7 +32,6 @@ public class RecipeMeGUI extends JFrame {
 
         // General frame setup and addition of main card panel
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
         this.setSize(new Dimension(750, 750));
         this.setVisible(true);
         this.add(mainPanel);
