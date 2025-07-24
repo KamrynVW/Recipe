@@ -10,30 +10,31 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 public class GUI_LandingPage extends JPanel {
 
-    Color bg = new Color(0x27282c);
-    Color txt = new Color(0xFF5F1F);
     private final JButton landPageStart;
 
     public GUI_LandingPage() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setBackground(bg);
-
+        SwingUtilities.invokeLater(() -> {
+            GUIColorsUtil.bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
+        });
+        
         // Creation of title label
         JLabel landPageTitle = new JLabel("RecipeMe");
         landPageTitle.setFont(new Font("Dialog", Font.BOLD, 50));
-        landPageTitle.setForeground(txt);
+        GUIColorsUtil.bindTextToColorManager(landPageTitle);
         landPageTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Creation of start button (with event listener defined later)
         landPageStart = new JButton("Start");
         landPageStart.setFont(new Font("Dialog", Font.BOLD, 40));
-        landPageStart.setForeground(txt);
+        GUIColorsUtil.bindTextToColorManager(landPageStart);
         landPageStart.setBackground(Color.DARK_GRAY);
         landPageStart.setAlignmentX(Component.CENTER_ALIGNMENT);
         landPageStart.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 2), new EmptyBorder(10, 20, 10, 20)));

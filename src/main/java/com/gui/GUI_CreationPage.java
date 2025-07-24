@@ -8,7 +8,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 
 import javax.swing.Box;
@@ -16,7 +15,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -43,14 +41,14 @@ public class GUI_CreationPage extends JPanel {
         this.onCreateDone = onCreationDone;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         SwingUtilities.invokeLater(() -> {
-            bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
+            GUIColorsUtil.bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
         });
 
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-        bindBackgroundToColorManager(titlePanel);
+        GUIColorsUtil.bindBackgroundToColorManager(titlePanel);
         JLabel creationTitleLabel = new JLabel("Recipe Creation");
-        bindTextToColorManager(creationTitleLabel);
+        GUIColorsUtil.bindTextToColorManager(creationTitleLabel);
         creationTitleLabel.setFont(new Font("Dialog", Font.BOLD, 40));
         creationTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titlePanel.add(creationTitleLabel);
@@ -58,10 +56,10 @@ public class GUI_CreationPage extends JPanel {
         // Creation of recipe name input box
         JPanel recipeNamePanel = new JPanel();
         recipeNamePanel.setLayout(new BoxLayout(recipeNamePanel, BoxLayout.Y_AXIS));
-        bindBackgroundToColorManager(recipeNamePanel);
+        GUIColorsUtil.bindBackgroundToColorManager(recipeNamePanel);
         JLabel nameLabel = new JLabel("Recipe Name:");
         nameLabel.setFont(new Font("Dialog", Font.PLAIN, 25));
-        nameLabel.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(nameLabel);
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         JTextField recipeName = new JTextField(30);
         recipeName.setFont(new Font("Dialog", Font.PLAIN, 25));
@@ -75,30 +73,30 @@ public class GUI_CreationPage extends JPanel {
         // Star rating creation
         JPanel recipeRatingPanel = new JPanel();
         recipeRatingPanel.setLayout(new BoxLayout(recipeRatingPanel, BoxLayout.X_AXIS));
-        bindBackgroundToColorManager(recipeRatingPanel);
+        GUIColorsUtil.bindBackgroundToColorManager(recipeRatingPanel);
         JLabel ratingLabel = new JLabel("Difficulty:");
-        ratingLabel.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(ratingLabel);
 
         ImageIcon empty = new ImageIcon("empty_star.png");
         ImageIcon full = new ImageIcon("full_star.png");
         JRadioButton oneButton = new JRadioButton();
-        bindBackgroundToColorManager(oneButton);
+        GUIColorsUtil.bindBackgroundToColorManager(oneButton);
         oneButton.setIcon(empty);
         oneButton.setSelectedIcon(full);
         JRadioButton twoButton = new JRadioButton();
-        bindBackgroundToColorManager(twoButton);
+        GUIColorsUtil.bindBackgroundToColorManager(twoButton);
         twoButton.setIcon(empty);
         twoButton.setSelectedIcon(full);
         JRadioButton threeButton = new JRadioButton();
-        bindBackgroundToColorManager(threeButton);
+        GUIColorsUtil.bindBackgroundToColorManager(threeButton);
         threeButton.setIcon(empty);
         threeButton.setSelectedIcon(full);
         JRadioButton fourButton = new JRadioButton();
-        bindBackgroundToColorManager(fourButton);
+        GUIColorsUtil.bindBackgroundToColorManager(fourButton);
         fourButton.setIcon(empty);
         fourButton.setSelectedIcon(full);
         JRadioButton fiveButton = new JRadioButton();
-        bindBackgroundToColorManager(fiveButton);
+        GUIColorsUtil.bindBackgroundToColorManager(fiveButton);
         fiveButton.setIcon(empty);
         fiveButton.setSelectedIcon(full);
 
@@ -159,35 +157,35 @@ public class GUI_CreationPage extends JPanel {
         // Create holder panel to align typing boxes and label
         JPanel ingredPanelHolder = new JPanel();
         ingredPanelHolder.setLayout(new BoxLayout(ingredPanelHolder, BoxLayout.Y_AXIS));
-        bindBackgroundToColorManager(ingredPanelHolder);
+        GUIColorsUtil.bindBackgroundToColorManager(ingredPanelHolder);
 
         // Create label for ingredient number being viewed
         JLabel ingredCountLabel = new JLabel("Ingredient " + ingredCardPos[0]);
         ingredCountLabel.setFont(buttonFont);
-        ingredCountLabel.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(ingredCountLabel);
         ingredCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         ingredPanelHolder.add(ingredCountLabel);
 
         // Create panel and buttons for transitions between ingredients
         JPanel ingredPanel = new JPanel();
-        bindBackgroundToColorManager(ingredPanel);
+        GUIColorsUtil.bindBackgroundToColorManager(ingredPanel);
         ingredPanel.setLayout(new BoxLayout(ingredPanel, BoxLayout.X_AXIS));
         JButton backButtonIngred = new JButton("Prev");
         backButtonIngred.setFont(buttonFont);
-        backButtonIngred.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(backButtonIngred);
         backButtonIngred.setBackground(Color.DARK_GRAY);
         JButton fwdButtonIngred = new JButton("Add");
         fwdButtonIngred.setFont(buttonFont);
-        fwdButtonIngred.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(fwdButtonIngred);
         fwdButtonIngred.setBackground(Color.DARK_GRAY);
         
         // Create panels for the input boxes
         JPanel valuesPanelCardHolder = new JPanel();
-        bindBackgroundToColorManager(valuesPanelCardHolder);
+        GUIColorsUtil.bindBackgroundToColorManager(valuesPanelCardHolder);
         CardLayout valuesLyt = new CardLayout();
         valuesPanelCardHolder.setLayout(valuesLyt);
         JPanel valuesPanel = new JPanel();
-        bindBackgroundToColorManager(valuesPanel);
+        GUIColorsUtil.bindBackgroundToColorManager(valuesPanel);
         valuesPanel.setLayout(new BoxLayout(valuesPanel, BoxLayout.X_AXIS));
 
         // Add the back button
@@ -234,7 +232,7 @@ public class GUI_CreationPage extends JPanel {
                 ingredCountLabel.setText("Ingredient " + ingredCardPos[0]);
 
                 JPanel newCard = new JPanel();
-                bindBackgroundToColorManager(newCard);
+                GUIColorsUtil.bindBackgroundToColorManager(newCard);
                 newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
                 newCard.add(createCardComponent("Qty...", 85));
                 newCard.add(createCardComponent("Measure...", 130));
@@ -262,35 +260,35 @@ public class GUI_CreationPage extends JPanel {
         // Create holder panel to align typing boxes and label
         JPanel instructionPanelHolder = new JPanel();
         instructionPanelHolder.setLayout(new BoxLayout(instructionPanelHolder, BoxLayout.Y_AXIS));
-        bindBackgroundToColorManager(instructionPanelHolder);
+        GUIColorsUtil.bindBackgroundToColorManager(instructionPanelHolder);
 
         // Create label for ingredient number being viewed
         JLabel instructionCountLabel = new JLabel("Instruction " + instrCardPos[0]);
         instructionCountLabel.setFont(buttonFont);
-        instructionCountLabel.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(instructionCountLabel);
         instructionCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         instructionPanelHolder.add(instructionCountLabel);
 
         // Create panel and buttons for transitions between ingredients
         JPanel instructionPanel = new JPanel();
-        bindBackgroundToColorManager(instructionPanel);
+        GUIColorsUtil.bindBackgroundToColorManager(instructionPanel);
         instructionPanel.setLayout(new BoxLayout(instructionPanel, BoxLayout.X_AXIS));
         JButton backButtonInstr = new JButton("Prev");
         backButtonInstr.setFont(buttonFont);
-        backButtonInstr.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(backButtonInstr);
         backButtonInstr.setBackground(Color.DARK_GRAY);
         JButton fwdButtonInstr = new JButton("Add");
         fwdButtonInstr.setFont(buttonFont);
-        fwdButtonInstr.setForeground(Color.WHITE);
+        GUIColorsUtil.bindTextToColorManager(fwdButtonInstr);
         fwdButtonInstr.setBackground(Color.DARK_GRAY);
         
         // Create panels for the input boxes
         JPanel instructionPanelCardHolder = new JPanel();
-        bindBackgroundToColorManager(instructionPanelCardHolder);
+        GUIColorsUtil.bindBackgroundToColorManager(instructionPanelCardHolder);
         CardLayout instructionLyt = new CardLayout();
         instructionPanelCardHolder.setLayout(instructionLyt);
         JPanel instructionValuesPanel = new JPanel();
-        bindBackgroundToColorManager(instructionValuesPanel);
+        GUIColorsUtil.bindBackgroundToColorManager(instructionValuesPanel);
         instructionValuesPanel.setLayout(new BoxLayout(instructionValuesPanel, BoxLayout.X_AXIS));
 
         // Add the back button
@@ -341,7 +339,7 @@ public class GUI_CreationPage extends JPanel {
                 instructionCountLabel.setText("Instruction " + instrCardPos[0]);
 
                 JPanel newCard = new JPanel();
-                bindBackgroundToColorManager(newCard);
+                GUIColorsUtil.bindBackgroundToColorManager(newCard);
                 newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
                 newCard.add(createInstructionCard());
                 
@@ -361,11 +359,11 @@ public class GUI_CreationPage extends JPanel {
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        bindBackgroundToColorManager(buttonPanel);
+        GUIColorsUtil.bindBackgroundToColorManager(buttonPanel);
         
         backButton = new JButton("<- Back");
         backButton.setFont(new Font("Dialog", Font.BOLD, 20));
-        bindTextToColorManager(backButton);
+        GUIColorsUtil.bindTextToColorManager(backButton);
         backButton.setBackground(Color.DARK_GRAY);
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 2), new EmptyBorder(10, 20, 10, 20)));
@@ -373,7 +371,7 @@ public class GUI_CreationPage extends JPanel {
 
         submitButton = new JButton("Create ->");
         submitButton.setFont(new Font("Dialog", Font.BOLD, 20));
-        bindTextToColorManager(submitButton);
+        GUIColorsUtil.bindTextToColorManager(submitButton);
         submitButton.setBackground(Color.DARK_GRAY);
         submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 2), new EmptyBorder(10, 20, 10, 20)));
@@ -382,7 +380,6 @@ public class GUI_CreationPage extends JPanel {
         buttonPanel.add(backButton);
         buttonPanel.add(Box.createHorizontalStrut(10));
         buttonPanel.add(submitButton);
-
 
         // Adding sub-panels to the Y_AXIS layout
         this.add(titlePanel);
@@ -484,7 +481,7 @@ public class GUI_CreationPage extends JPanel {
             ingredCardPos[0] = 1;
             ingredCountLabel.setText("Ingredient 1");
             JPanel newCard = new JPanel();
-            bindBackgroundToColorManager(newCard);
+            GUIColorsUtil.bindBackgroundToColorManager(newCard);
             newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
             newCard.add(createCardComponent("Qty...", 85));
             newCard.add(createCardComponent("Measure...", 130));
@@ -499,7 +496,7 @@ public class GUI_CreationPage extends JPanel {
             instrCardPos[0] = 1;
             instructionCountLabel.setText("Instruction 1");
             JPanel newCard2 = new JPanel();
-            bindBackgroundToColorManager(newCard2);
+            GUIColorsUtil.bindBackgroundToColorManager(newCard2);
             newCard2.setLayout(new BoxLayout(newCard2, BoxLayout.X_AXIS));
             newCard2.add(createInstructionCard());
                 
@@ -527,7 +524,7 @@ public class GUI_CreationPage extends JPanel {
             ingredCardPos[0] = 1;
             ingredCountLabel.setText("Ingredient 1");
             JPanel newCard = new JPanel();
-            bindBackgroundToColorManager(newCard);
+            GUIColorsUtil.bindBackgroundToColorManager(newCard);
             newCard.setLayout(new BoxLayout(newCard, BoxLayout.X_AXIS));
             newCard.add(createCardComponent("Qty...", 85));
             newCard.add(createCardComponent("Measure...", 130));
@@ -542,7 +539,7 @@ public class GUI_CreationPage extends JPanel {
             instrCardPos[0] = 1;
             instructionCountLabel.setText("Instruction 1");
             JPanel newCard2 = new JPanel();
-            bindBackgroundToColorManager(newCard2);
+            GUIColorsUtil.bindBackgroundToColorManager(newCard2);
             newCard2.setLayout(new BoxLayout(newCard2, BoxLayout.X_AXIS));
             newCard2.add(createInstructionCard());
                 
@@ -590,27 +587,5 @@ public class GUI_CreationPage extends JPanel {
     
     public JButton getBackButton() {
         return backButton;
-    }
-
-    public static void bindBackgroundToColorManager(JComponent component) {
-        component.setBackground(GUIColors.INSTANCE.getBackgroundColor());
-
-        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if ("backgroundColor".equals(evt.getPropertyName())) {
-                component.setBackground((Color) evt.getNewValue());
-                component.repaint();
-            }
-        });
-    }
-
-    public static void bindTextToColorManager(JComponent component) {
-        component.setForeground(GUIColors.INSTANCE.getTextColor());
-
-        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if ("textColor".equals(evt.getPropertyName())) {
-                component.setForeground((Color) evt.getNewValue());
-                component.repaint();
-            }
-        });
     }
 }

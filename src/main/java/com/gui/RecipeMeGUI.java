@@ -24,11 +24,16 @@ public class RecipeMeGUI extends JFrame {
         /* Creation Page */
 
         GUI_CreationPage creationPanel = new GUI_CreationPage(() -> {lyt.show(mainPanel, "base"); basePage.updateRecipes();});
+
+        /* Settings Page */
+
+        GUI_SettingsPage settingsPanel = new GUI_SettingsPage();
         
         // Adding all panels to the main CardLayout panel
         mainPanel.add(landPagePanel, "landing");
         mainPanel.add(basePage, "base");
         mainPanel.add(creationPanel, "create");
+        mainPanel.add(settingsPanel, "settings");
 
         // General frame setup and addition of main card panel
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,6 +44,9 @@ public class RecipeMeGUI extends JFrame {
         // Action Listener definitions
         landPagePanel.getStartButton().addActionListener(_ -> lyt.show(mainPanel, "base"));
         basePage.getNewButton().addActionListener(_ -> lyt.show(mainPanel, "create"));
+        basePage.getSettingsButton().addActionListener(_ -> lyt.show(mainPanel, "settings"));
         creationPanel.getBackButton().addActionListener(_ -> lyt.show(mainPanel, "base"));
+        settingsPanel.getBackButton().addActionListener(_ -> lyt.show(mainPanel, "base"));
+
     }
 }

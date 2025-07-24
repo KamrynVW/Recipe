@@ -7,14 +7,12 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -41,22 +39,22 @@ public class GUI_BasePage extends JPanel {
         // Layout setup
         this.setLayout(new BorderLayout());
         SwingUtilities.invokeLater(() -> {
-            bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
+            GUIColorsUtil.bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
         });
         Border topBarBorder = BorderFactory.createLineBorder(Color.GRAY, 1);
 
         // Creation of top panel including search bar and buttons
         JPanel topBar = new JPanel();
         topBar.setLayout(new BorderLayout());
-        bindBackgroundToColorManager(topBar);
+        GUIColorsUtil.bindBackgroundToColorManager(topBar);
 
         //Sub-panels for top bar
         JPanel topBarSearch = new JPanel();
-        bindBackgroundToColorManager(topBarSearch);
+        GUIColorsUtil.bindBackgroundToColorManager(topBarSearch);
         topBarSearch.setLayout(new BoxLayout(topBarSearch, BoxLayout.X_AXIS));
 
         JPanel topBarButtons = new JPanel();
-        bindBackgroundToColorManager(topBarButtons);
+        GUIColorsUtil.bindBackgroundToColorManager(topBarButtons);
         topBarButtons.setLayout(new BoxLayout(topBarButtons, BoxLayout.X_AXIS));
 
         // Creation of search field
@@ -84,9 +82,9 @@ public class GUI_BasePage extends JPanel {
         });
         
         // Creation of search button
-        JButton searchButton = new JButton("\uD83D\uDD0E");
+        JButton searchButton = new JButton(" \uD83D\uDD0E ");
         searchButton.setFont(new Font("Dialog", Font.PLAIN, 35));
-        bindTextToColorManager(searchButton);
+        GUIColorsUtil.bindTextToColorManager(searchButton);
         searchButton.setBackground(Color.DARK_GRAY);
         searchButton.setFocusPainted(false);
         searchButton.setBorder(topBarBorder);
@@ -98,18 +96,17 @@ public class GUI_BasePage extends JPanel {
         });
         
         // Creation of new recipe button
-        newButton = new JButton("\u271A");
+        newButton = new JButton(" \u271A ");
         newButton.setFont(new Font("Dialog", Font.PLAIN, 35));
-        bindTextToColorManager(newButton);
+        GUIColorsUtil.bindTextToColorManager(newButton);
         newButton.setBackground(Color.DARK_GRAY);
         newButton.setFocusPainted(false);
         newButton.setBorder(topBarBorder);
 
-        //ImageIcon gear = new ImageIcon("gear.png");
-        settingsButton = new JButton("\u2699");
+        settingsButton = new JButton(" \u2699 ");
         settingsButton.setFont(new Font("Dialog", Font.PLAIN, 35));
         settingsButton.setMargin(new Insets(10, 20, 10, 20));
-        bindTextToColorManager(settingsButton);
+        GUIColorsUtil.bindTextToColorManager(settingsButton);
         settingsButton.setBackground(Color.DARK_GRAY);
         settingsButton.setFocusPainted(false);
         settingsButton.setBorder(topBarBorder);
@@ -130,7 +127,7 @@ public class GUI_BasePage extends JPanel {
 
         recipeScrollPanel = new JPanel();
         recipeScrollPanel.setLayout(new BoxLayout(recipeScrollPanel, BoxLayout.Y_AXIS));
-        bindBackgroundToColorManager(recipeScrollPanel);
+        GUIColorsUtil.bindBackgroundToColorManager(recipeScrollPanel);
 
         scroll = new JScrollPane(recipeScrollPanel);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -156,7 +153,7 @@ public class GUI_BasePage extends JPanel {
         // Panel set-up
         JPanel listedRecipePanel = new JPanel();
         listedRecipePanel.setBorder(recipeListingBorder);
-        bindBackgroundToColorManager(listedRecipePanel);
+        GUIColorsUtil.bindBackgroundToColorManager(listedRecipePanel);
         listedRecipePanel.setLayout(new BoxLayout(listedRecipePanel, BoxLayout.Y_AXIS));
         listedRecipePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 75));
 
@@ -183,9 +180,9 @@ public class GUI_BasePage extends JPanel {
         }
 
         titleOfRecipe.setFont(new Font("Dialog", Font.BOLD, 35));
-        bindTextToColorManager(titleOfRecipe);
+        GUIColorsUtil.bindTextToColorManager(titleOfRecipe);
         listOfIngredients.setFont(new Font("Dialog", Font.PLAIN, 20));
-        bindTextToColorManager(listOfIngredients);
+        GUIColorsUtil.bindTextToColorManager(listOfIngredients);
 
         listedRecipePanel.add(titleOfRecipe);
         listedRecipePanel.add(listOfIngredients);
@@ -235,27 +232,5 @@ public class GUI_BasePage extends JPanel {
                 showRecipe = true;
             }
         }
-    }
-
-    public static void bindBackgroundToColorManager(JComponent component) {
-        component.setBackground(GUIColors.INSTANCE.getBackgroundColor());
-
-        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if ("backgroundColor".equals(evt.getPropertyName())) {
-                component.setBackground((Color) evt.getNewValue());
-                component.repaint();
-            }
-        });
-    }
-
-    public static void bindTextToColorManager(JComponent component) {
-        component.setForeground(GUIColors.INSTANCE.getTextColor());
-
-        GUIColors.INSTANCE.addPropertyChangeListener((PropertyChangeEvent evt) -> {
-            if ("textColor".equals(evt.getPropertyName())) {
-                component.setForeground((Color) evt.getNewValue());
-                component.repaint();
-            }
-        });
     }
 }
