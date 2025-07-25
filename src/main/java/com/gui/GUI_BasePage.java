@@ -2,20 +2,28 @@ package com.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -32,7 +40,7 @@ public class GUI_BasePage extends JPanel {
     private final JPanel recipeScrollPanel;
     private final JScrollPane scroll;
     private ArrayList<Recipe> listOfRecipes;
-    private final Border recipeListingBorder = BorderFactory.createLineBorder(new Color(0xFF5F1F), 2);
+    private final Border recipeListingBorder = BorderFactory.createLineBorder(Color.GRAY, 2);
     
     public GUI_BasePage() {
         
@@ -89,11 +97,7 @@ public class GUI_BasePage extends JPanel {
         searchButton.setFocusPainted(false);
         searchButton.setBorder(topBarBorder);
         
-        searchButton.addActionListener(_ -> {
-            updateRecipes(searchField.getText());
-            GUIColors.INSTANCE.setBackgroundColor(Color.BLACK);
-            GUIColors.INSTANCE.setTextColor(Color.CYAN);
-        });
+        searchButton.addActionListener(_ -> updateRecipes(searchField.getText()));
         
         // Creation of new recipe button
         newButton = new JButton(" \u271A ");
@@ -186,6 +190,7 @@ public class GUI_BasePage extends JPanel {
 
         listedRecipePanel.add(titleOfRecipe);
         listedRecipePanel.add(listOfIngredients);
+        addViewRecipe(listedRecipePanel, rec);
 
         recipeScrollPanel.add(listedRecipePanel);
     }
@@ -232,5 +237,155 @@ public class GUI_BasePage extends JPanel {
                 showRecipe = true;
             }
         }
+    }
+
+    private void addViewRecipe(JComponent display, Recipe rec) {
+        display.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                // Create a new window to display the recipe in off to the side
+                JFrame recipeDisplay = new JFrame();
+                recipeDisplay.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                recipeDisplay.setSize(new Dimension(350, 750));
+                recipeDisplay.setLocation(1000, 0);
+                recipeDisplay.setVisible(true);
+                
+                // This panel holds all components in a vertical stack
+                JPanel recipeDisplayPanel = new JPanel();
+                recipeDisplayPanel.setLayout(new BoxLayout(recipeDisplayPanel, BoxLayout.Y_AXIS));
+                GUIColorsUtil.bindBackgroundToColorManager(recipeDisplayPanel);
+
+                // Recipe name big and bold at the top
+                JLabel recipeName = new JLabel(rec.getName());
+                GUIColorsUtil.bindTextToColorManager(recipeName);
+                recipeName.setFont(new Font("Dialog", Font.BOLD, 30));
+                recipeName.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                // Thin separator below the title for aesthetics
+                JSeparator horizBreak = new JSeparator();
+                GUIColorsUtil.bindTextToColorManager(horizBreak);
+                GUIColorsUtil.bindBackgroundToColorManager(horizBreak);
+
+                Font ingredientFont = new Font("Dialog", Font.PLAIN, 20); //Font for ingredients and instructions
+
+                // A vertically stacked panel that holds ingredients
+                JPanel ingredientsStackedPanel = new JPanel();
+                ingredientsStackedPanel.setLayout(new BoxLayout(ingredientsStackedPanel, BoxLayout.Y_AXIS));
+                GUIColorsUtil.bindBackgroundToColorManager(ingredientsStackedPanel);
+                JTextArea ingredientsHeader = new JTextArea("Ingredients:");
+                ingredientsHeader.setWrapStyleWord(true);
+                ingredientsHeader.setLineWrap(true);
+                ingredientsHeader.setEditable(false);
+                ingredientsHeader.setFocusable(false);
+                ingredientsHeader.setOpaque(false);
+                ingredientsHeader.setBorder(null);
+                ingredientsHeader.setFont(ingredientFont);
+                ingredientsHeader.setFont(new Font("Dialog", Font.BOLD, 22));
+                GUIColorsUtil.bindTextToColorManager(ingredientsHeader);
+                ingredientsStackedPanel.add(ingredientsHeader);
+
+                // For each ingredient, add them in formatted string to the stacked panel
+                for(Ingredient ing : rec.getIngredients()) {
+                    JTextArea ingredient = new JTextArea(ing.getName() + " - " + ing.getQuantity() + " " + ing.getMeasurement());
+                    ingredient.setWrapStyleWord(true);
+                    ingredient.setLineWrap(true);
+                    ingredient.setEditable(false);
+                    ingredient.setFocusable(false);
+                    ingredient.setOpaque(false);
+                    ingredient.setBorder(null);
+                    ingredient.setFont(ingredientFont);
+                    GUIColorsUtil.bindTextToColorManager(ingredient);
+                    ingredientsStackedPanel.add(ingredient);
+                }
+
+                // Turn the stacked panel to a scroll panel with specific measures to ensure visibility
+                JScrollPane scrollPane = new JScrollPane(ingredientsStackedPanel);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane.setPreferredSize(new Dimension(330, 315)); // visible size - tested according to current dimensions
+                scrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 315));
+                scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+                scrollPane.setBorder(BorderFactory.createEmptyBorder());
+                GUIColorsUtil.bindBackgroundToColorManager(scrollPane.getViewport());
+                GUIColorsUtil.bindBackgroundToColorManager(scrollPane);
+
+                // Holder for vertically stacked ingredients that aligns them to the left for formatting
+                JPanel recipeIngredientHolder = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                recipeIngredientHolder.setAlignmentX(Component.CENTER_ALIGNMENT);
+                GUIColorsUtil.bindBackgroundToColorManager(recipeIngredientHolder);
+                recipeIngredientHolder.add(scrollPane);
+
+                // Reset position of scroll panel because text areas send it down (for some reason?)
+                SwingUtilities.invokeLater(() -> {
+                    scrollPane.getVerticalScrollBar().setValue(0);
+                });
+
+                // A vertically stacked panel that holds ingredients
+                JPanel instructionsStackedPanel = new JPanel();
+                instructionsStackedPanel.setLayout(new BoxLayout(instructionsStackedPanel, BoxLayout.Y_AXIS));
+                GUIColorsUtil.bindBackgroundToColorManager(instructionsStackedPanel);
+                JTextArea instructionsHeader = new JTextArea("Instructions:");
+                instructionsHeader.setWrapStyleWord(true);
+                instructionsHeader.setLineWrap(true);
+                instructionsHeader.setEditable(false);
+                instructionsHeader.setFocusable(false);
+                instructionsHeader.setOpaque(false);
+                instructionsHeader.setBorder(null);
+                instructionsHeader.setFont(new Font("Dialog", Font.BOLD, 22));
+                GUIColorsUtil.bindTextToColorManager(instructionsHeader);
+                instructionsStackedPanel.add(instructionsHeader);
+
+                // For each ingredient, add them in formatted string to the stacked panel
+                for(String inst : rec.getInstructions()) {
+                    JTextArea instruction = new JTextArea(inst);
+                    instruction.setWrapStyleWord(true);
+                    instruction.setLineWrap(true);
+                    instruction.setEditable(false);
+                    instruction.setFocusable(false);
+                    instruction.setOpaque(false);
+                    instruction.setBorder(null);
+                    instruction.setFont(ingredientFont);
+                    GUIColorsUtil.bindTextToColorManager(instruction);
+                    instructionsStackedPanel.add(instruction);
+                }
+
+                // Turn the stacked panel to a scroll panel with specific measures to ensure visibility
+                JScrollPane scrollPane2 = new JScrollPane(instructionsStackedPanel);
+                scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane2.setPreferredSize(new Dimension(330, 330)); // visible size - tested according to current dimensions
+                scrollPane2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
+                scrollPane2.setAlignmentX(Component.CENTER_ALIGNMENT);
+                scrollPane2.setBorder(BorderFactory.createEmptyBorder());
+                GUIColorsUtil.bindBackgroundToColorManager(scrollPane2.getViewport());
+                GUIColorsUtil.bindBackgroundToColorManager(scrollPane2);
+
+                // Holder for vertically stacked ingredients that aligns them to the left for formatting
+                JPanel recipeInstructionHolder = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                recipeInstructionHolder.setAlignmentX(Component.CENTER_ALIGNMENT);
+                GUIColorsUtil.bindBackgroundToColorManager(recipeInstructionHolder);
+                recipeInstructionHolder.add(scrollPane2);
+
+                // Reset position of scroll panel because text areas send it down (for some reason?)
+                SwingUtilities.invokeLater(() -> {
+                    scrollPane2.getVerticalScrollBar().setValue(0);
+                });
+
+                // Thin separator between instruction and ingredients for aesthetics
+                JSeparator horizBreak2 = new JSeparator();
+                GUIColorsUtil.bindTextToColorManager(horizBreak2);
+                GUIColorsUtil.bindBackgroundToColorManager(horizBreak2);
+
+                // Combine everything with spacing between
+                recipeDisplayPanel.add(recipeName);
+                recipeDisplayPanel.add(Box.createVerticalStrut(5));
+                recipeDisplayPanel.add(horizBreak);
+                recipeDisplayPanel.add(recipeIngredientHolder);
+                recipeDisplayPanel.add(horizBreak2);
+                recipeDisplayPanel.add(recipeInstructionHolder);
+                recipeDisplay.add(recipeDisplayPanel);
+            }
+        });
     }
 }
