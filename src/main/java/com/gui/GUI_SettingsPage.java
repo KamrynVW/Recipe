@@ -92,7 +92,7 @@ public class GUI_SettingsPage extends JPanel {
         JButton bgRed = new JButton("  ");
         decorateButton(bgRed, deepRed, 1);
         
-        // Add elements to their respective panel, then add both subpanels to holder panel
+        // Add elements to their panel with good spacing between according to amount of options
         backgroundColorPanel.add(bgBlack);
         backgroundColorPanel.add(Box.createHorizontalStrut(30));
         backgroundColorPanel.add(bgWhite);
@@ -141,6 +141,7 @@ public class GUI_SettingsPage extends JPanel {
         JButton txtPink = new JButton("  ");
         decorateButton(txtPink, pink, 2);
 
+        // Add elements to their panel with good spacing between according to amount of options
         textColorPanel.add(txtBlack);
         textColorPanel.add(Box.createHorizontalStrut(15));
         textColorPanel.add(txtWhite);
@@ -172,6 +173,7 @@ public class GUI_SettingsPage extends JPanel {
         backButton.setRolloverEnabled(false);
         backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Combine everything into the overall panel with big spacing to allow ease of clicking
         this.add(headerPanel);
         this.add(separator);
         this.add(Box.createVerticalStrut(30));
@@ -187,10 +189,12 @@ public class GUI_SettingsPage extends JPanel {
         this.add(Box.createVerticalGlue());
     }
 
+    // Getter for back button transition
     public JButton getBackButton() {
         return backButton;
     }
 
+    // Decorate button with color, font, and general properties, as well as action listener
     private void decorateButton(JButton button, Color color, int type) {
         button.setFont(subtitleFont);
         button.setFocusPainted(false);
@@ -199,6 +203,7 @@ public class GUI_SettingsPage extends JPanel {
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         button.setRolloverEnabled(false);
         
+        // Type 1 = background, Type 2 = text
         if(type == 1) {
             button.addActionListener(_ -> {GUIColors.INSTANCE.setBackgroundColor(color); GUIColors.INSTANCE.saveState();});
         } else if (type == 2) {

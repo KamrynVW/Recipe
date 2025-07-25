@@ -3,6 +3,7 @@ package com.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -20,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -28,6 +30,9 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import com.recipeme.Ingredient;
 import com.recipeme.Recipe;
@@ -41,6 +46,7 @@ public class GUI_BasePage extends JPanel {
     private final JScrollPane scroll;
     private ArrayList<Recipe> listOfRecipes;
     private final Border recipeListingBorder = BorderFactory.createLineBorder(Color.GRAY, 2);
+    private int displayedRecipes;
     
     public GUI_BasePage() {
         
@@ -154,12 +160,14 @@ public class GUI_BasePage extends JPanel {
     private void addNewRecipe(Recipe rec) {
         // Place recipes into the scroll pane
 
+        displayedRecipes += 1; // Increment amount of showed recipies
+
         // Panel set-up
         JPanel listedRecipePanel = new JPanel();
         listedRecipePanel.setBorder(recipeListingBorder);
         GUIColorsUtil.bindBackgroundToColorManager(listedRecipePanel);
         listedRecipePanel.setLayout(new BoxLayout(listedRecipePanel, BoxLayout.Y_AXIS));
-        listedRecipePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 75));
+        listedRecipePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
         // Dynamic titling and ingredient listing
         JLabel titleOfRecipe;
@@ -188,16 +196,59 @@ public class GUI_BasePage extends JPanel {
         listOfIngredients.setFont(new Font("Dialog", Font.PLAIN, 20));
         GUIColorsUtil.bindTextToColorManager(listOfIngredients);
 
+        // Edit and delete button creation and decoration
+        JButton editButton = new JButton("Edit");
+        JButton deleteButton = new JButton("Delete");
+        GUIColorsUtil.bindTextToColorManager(editButton);
+        GUIColorsUtil.bindTextToColorManager(deleteButton);
+        editButton.setFocusPainted(false); 
+        editButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        editButton.setRolloverEnabled(false);
+        deleteButton.setFocusPainted(false); 
+        deleteButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        deleteButton.setRolloverEnabled(false);
+        editButton.setBorder(new CompoundBorder(new LineBorder(Color.LIGHT_GRAY, 2), new EmptyBorder(1, 3, 1, 3)));
+        deleteButton.setBorder(new CompoundBorder(new LineBorder(Color.LIGHT_GRAY, 2), new EmptyBorder(1, 3, 1, 3)));
+        editButton.setBackground(Color.GRAY);
+        deleteButton.setBackground(Color.GRAY);
+        editButton.setFont(new Font("Dialog", Font.PLAIN, 15));
+        deleteButton.setFont(new Font("Dialog", Font.PLAIN, 15));
+
+        // Delete event listener
+        int indexOfRecipe = displayedRecipes;
+        deleteButton.addActionListener(_ -> {
+            // Make a quick pop-up confirming whether user wants to delete or not with recipe name
+            int choice = JOptionPane.showConfirmDialog(null, "Delete " + rec.getName() + "?", "Confirm deletion", JOptionPane.OK_CANCEL_OPTION);
+
+            if(choice == JOptionPane.OK_OPTION) {
+                deleteRecipe(indexOfRecipe - 1); // Provides an index of recipe in list for removal
+            }
+        }); 
+
+        // Edit event listener - WIP
+
+        // Panel to properly align edit and delete buttons
+        JPanel editOrDeleteHolder = new JPanel();
+        editOrDeleteHolder.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        editOrDeleteHolder.setAlignmentX(Component.LEFT_ALIGNMENT);
+        editOrDeleteHolder.add(editButton);
+        editOrDeleteHolder.add(deleteButton);
+        editOrDeleteHolder.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+        GUIColorsUtil.bindBackgroundToColorManager(editOrDeleteHolder);
+        
         listedRecipePanel.add(titleOfRecipe);
         listedRecipePanel.add(listOfIngredients);
+        listedRecipePanel.add(editOrDeleteHolder);
         addViewRecipe(listedRecipePanel, rec);
 
         recipeScrollPanel.add(listedRecipePanel);
+        recipeScrollPanel.add(Box.createVerticalGlue());
     }
 
     public final void updateRecipes() {
         // Load recipes from the save data (to create concurrency) and add all to pane
         listOfRecipes = Serialize.loadRecipeList();
+        displayedRecipes = 0;
 
         recipeScrollPanel.removeAll();
         recipeScrollPanel.revalidate();
@@ -206,12 +257,18 @@ public class GUI_BasePage extends JPanel {
         for(Recipe rec : listOfRecipes) {
             addNewRecipe(rec);
         }
+
+        if(listOfRecipes.isEmpty()) {
+            stateNoRecipes();
+        }
     }
 
     public final void updateRecipes(String searchTerms) {
 
         boolean showRecipe = true;
+        boolean didShowRecipe = false;
         listOfRecipes = Serialize.loadRecipeList();
+        displayedRecipes = 0;
 
         recipeScrollPanel.removeAll();
         recipeScrollPanel.revalidate();
@@ -225,21 +282,37 @@ public class GUI_BasePage extends JPanel {
 
         for(Recipe rec : listOfRecipes) {
             for(String term : searchTermsSeparated) {
-                if(rec.doesRecipeContainIngredient(term) != 1) {
-                    showRecipe = false;
-                    break;
+                // If there is a '!', filter the ingredient rather than search for
+                if(term.contains("!")) {
+                    if(rec.doesRecipeContainIngredient(term.substring(1, term.length())) != 0) { // Do substring to eliminate '!'
+                        showRecipe = false;
+                        break;
+                    }
+                } else {
+                    // Regular recipe search utility
+                    if(rec.doesRecipeContainIngredient(term) != 1) {
+                        showRecipe = false;
+                        break;
+                    }
                 }
             }
 
             if(showRecipe) {
                 addNewRecipe(rec);
+                didShowRecipe = true;
             } else {
                 showRecipe = true;
+            }
+
+            if(!didShowRecipe) {
+                stateNoRecipes();
             }
         }
     }
 
     private void addViewRecipe(JComponent display, Recipe rec) {
+        display.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
         display.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -250,6 +323,7 @@ public class GUI_BasePage extends JPanel {
                 recipeDisplay.setSize(new Dimension(350, 750));
                 recipeDisplay.setLocation(1000, 0);
                 recipeDisplay.setVisible(true);
+                recipeDisplay.setResizable(false);
                 
                 // This panel holds all components in a vertical stack
                 JPanel recipeDisplayPanel = new JPanel();
@@ -288,6 +362,12 @@ public class GUI_BasePage extends JPanel {
                 // For each ingredient, add them in formatted string to the stacked panel
                 for(Ingredient ing : rec.getIngredients()) {
                     JTextArea ingredient = new JTextArea(ing.getName() + " - " + ing.getQuantity() + " " + ing.getMeasurement());
+
+                    // If ingredient text is empty, remove dash
+                    if(ingredient.getText().equals(" -  ")) {
+                        ingredient.setText("");
+                    }
+
                     ingredient.setWrapStyleWord(true);
                     ingredient.setLineWrap(true);
                     ingredient.setEditable(false);
@@ -338,7 +418,7 @@ public class GUI_BasePage extends JPanel {
 
                 // For each ingredient, add them in formatted string to the stacked panel
                 for(String inst : rec.getInstructions()) {
-                    JTextArea instruction = new JTextArea(inst);
+                    JTextArea instruction = new JTextArea(inst);                    
                     instruction.setWrapStyleWord(true);
                     instruction.setLineWrap(true);
                     instruction.setEditable(false);
@@ -388,4 +468,22 @@ public class GUI_BasePage extends JPanel {
             }
         });
     }
+
+    private void deleteRecipe(int recipeIndex) {
+        listOfRecipes.remove(recipeIndex); // Remove particular recipe
+        Serialize.saveRecipeList(listOfRecipes); // Save state of list after removal
+        updateRecipes(); // Update shown recipe list based on change
+    }
+
+    private void stateNoRecipes() {
+        // Create and decorate label stating no recipes, and add to scroll panel (will be removed automatically if any recipes are added)
+        JLabel noRecipes = new JLabel("No recipes yet... Create one with the '+' icon!");
+        noRecipes.setFont(new Font("Dialog", Font.BOLD, 30));
+        noRecipes.setAlignmentX(Component.CENTER_ALIGNMENT);
+        GUIColorsUtil.bindTextToColorManager(noRecipes);
+        
+        recipeScrollPanel.add(Box.createVerticalStrut(10));
+        recipeScrollPanel.add(noRecipes);
+    }
+
 }

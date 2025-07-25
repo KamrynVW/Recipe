@@ -431,17 +431,26 @@ public class GUI_CreationPage extends JPanel {
                             switch (textFieldCounter) {
                                 case 1 -> {
                                     textFieldCounter += 1;
+                                    if(text.getText().equals("Qty...")) {
+                                        text.setText("");
+                                    }
                                     ingred.setQuantity(text.getText());
                                 }
                                 case 2 -> {
                                     textFieldCounter += 1;
+                                    if(text.getText().equals("Measure...")) {
+                                        text.setText("");
+                                    }
                                     ingred.setMeasurement(text.getText());
                                 }
                                 case 3 -> {
                                     textFieldCounter = 1;
+                                    if(text.getText().equals("Ingredient...")) {
+                                        text.setText("");
+                                    }
                                     ingred.setName(text.getText());
                                 }
-                            }
+                            } 
                         }
                     }
 
@@ -461,7 +470,12 @@ public class GUI_CreationPage extends JPanel {
                 }
             }
 
-            // Create new recipe with fetched instructions
+            // Create new recipe with fetched instructions after checking for blanks
+            if(nameOfRecipe.equals("")) {
+                nameOfRecipe = "Recipe";
+            }
+
+
             Recipe newRecipe = new Recipe(nameOfRecipe, ingredients, difficulty, instructions);
             recipes = Serialize.loadRecipeList();
             recipes.add(newRecipe);
