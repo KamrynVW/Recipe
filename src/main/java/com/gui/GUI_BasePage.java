@@ -73,24 +73,25 @@ public class GUI_BasePage extends JPanel {
 
         // Creation of search field
         JTextField searchField = new JTextField();
-        searchField.setFont(new Font("Dialog", Font.ITALIC, 20));
+        searchField.setFont(new Font("Dialog", Font.ITALIC, 17));
         searchField.setForeground(Color.WHITE);
         searchField.setBackground(Color.DARK_GRAY);
-        searchField.setText("Enter ingredients here (with '!' before item to exclude)...");
+        searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
         searchField.setBorder(topBarBorder);
         searchField.setMaximumSize(new Dimension(7000, 100));
+        searchField.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
 
         searchField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                if("Enter ingredients here (with '!' before item to exclude)...".equals(searchField.getText()))
+                if("Enter ingredients here (between commas with '!' before term to exclude)...".equals(searchField.getText()))
                 searchField.setText("");
             }
 
             @Override
             public void focusLost(FocusEvent e) {
                 if("".equals(searchField.getText())) {
-                    searchField.setText("Enter ingredients here (with '!' before item to exclude)...");
+                    searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
                 }
             }
         });
@@ -102,8 +103,15 @@ public class GUI_BasePage extends JPanel {
         searchButton.setBackground(Color.DARK_GRAY);
         searchButton.setFocusPainted(false);
         searchButton.setBorder(topBarBorder);
+        searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         
-        searchButton.addActionListener(_ -> updateRecipes(searchField.getText()));
+        SwingUtilities.invokeLater(() -> {
+            searchButton.addActionListener(_ -> updateRecipes(searchField.getText()));
+
+            searchField.addActionListener(_ -> {
+                searchButton.doClick();
+            });
+        });
         
         // Creation of new recipe button
         newButton = new JButton(" \u271A ");
@@ -112,6 +120,12 @@ public class GUI_BasePage extends JPanel {
         newButton.setBackground(Color.DARK_GRAY);
         newButton.setFocusPainted(false);
         newButton.setBorder(topBarBorder);
+        newButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        newButton.addActionListener(_ -> {
+            searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
+            updateRecipes();
+        });
 
         settingsButton = new JButton(" \u2699 ");
         settingsButton.setFont(new Font("Dialog", Font.PLAIN, 35));
@@ -120,6 +134,12 @@ public class GUI_BasePage extends JPanel {
         settingsButton.setBackground(Color.DARK_GRAY);
         settingsButton.setFocusPainted(false);
         settingsButton.setBorder(topBarBorder);
+        settingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        settingsButton.addActionListener(_ -> {
+            searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
+            updateRecipes();
+        });
 
         // Add components to sub-panels
         topBarSearch.add(searchField);
@@ -161,6 +181,7 @@ public class GUI_BasePage extends JPanel {
         // Place recipes into the scroll pane
 
         displayedRecipes += 1; // Increment amount of showed recipies
+        int indexOfRecipe = displayedRecipes;
 
         // Panel set-up
         JPanel listedRecipePanel = new JPanel();
@@ -215,7 +236,7 @@ public class GUI_BasePage extends JPanel {
         deleteButton.setFont(new Font("Dialog", Font.PLAIN, 15));
 
         // Delete event listener
-        int indexOfRecipe = displayedRecipes;
+        
         deleteButton.addActionListener(_ -> {
             // Make a quick pop-up confirming whether user wants to delete or not with recipe name
             int choice = JOptionPane.showConfirmDialog(null, "Delete " + rec.getName() + "?", "Confirm deletion", JOptionPane.OK_CANCEL_OPTION);
@@ -225,7 +246,10 @@ public class GUI_BasePage extends JPanel {
             }
         }); 
 
-        // Edit event listener - WIP
+        // Edit action listener
+        editButton.addActionListener(_ -> {
+            editRecipe(indexOfRecipe - 1);
+        });
 
         // Panel to properly align edit and delete buttons
         JPanel editOrDeleteHolder = new JPanel();
@@ -265,7 +289,7 @@ public class GUI_BasePage extends JPanel {
 
     public final void updateRecipes(String searchTerms) {
 
-        boolean showRecipe = true;
+        boolean showRecipe = false;
         boolean didShowRecipe = false;
         listOfRecipes = Serialize.loadRecipeList();
         displayedRecipes = 0;
@@ -280,33 +304,32 @@ public class GUI_BasePage extends JPanel {
             searchTermsSeparated.add(str.trim());
         }
 
+        // If the placeholder in search bar ends up as a search, filter it out and replace with nothing
+        if(searchTermsSeparated.size() == 1 & searchTermsSeparated.get(0).equals("Enter ingredients here (between commas with '!' before term to exclude)...")) {
+            searchTermsSeparated.remove(0);
+        }
+
         for(Recipe rec : listOfRecipes) {
             for(String term : searchTermsSeparated) {
                 // If there is a '!', filter the ingredient rather than search for
                 if(term.contains("!")) {
-                    if(rec.doesRecipeContainIngredient(term.substring(1, term.length())) != 0) { // Do substring to eliminate '!'
-                        showRecipe = false;
-                        break;
-                    }
+                    showRecipe = rec.doesRecipeContainIngredient(term.substring(1, term.length())) == 0; // Do substring to eliminate '!'
                 } else {
                     // Regular recipe search utility
-                    if(rec.doesRecipeContainIngredient(term) != 1) {
-                        showRecipe = false;
-                        break;
-                    }
+                    showRecipe = rec.doesRecipeContainIngredient(term) == 1 || rec.getName().equalsIgnoreCase(term);
                 }
             }
 
             if(showRecipe) {
+                // Add the recipe to the screen, state we've shown a recipe, and reset that a recipe has been found for future results
                 addNewRecipe(rec);
                 didShowRecipe = true;
-            } else {
-                showRecipe = true;
-            }
+                showRecipe = false;
+            } 
+        }
 
-            if(!didShowRecipe) {
-                stateNoRecipes();
-            }
+        if(!didShowRecipe) {
+            stateNoRecipes();
         }
     }
 
@@ -481,9 +504,19 @@ public class GUI_BasePage extends JPanel {
         noRecipes.setFont(new Font("Dialog", Font.BOLD, 30));
         noRecipes.setAlignmentX(Component.CENTER_ALIGNMENT);
         GUIColorsUtil.bindTextToColorManager(noRecipes);
-        
+
         recipeScrollPanel.add(Box.createVerticalStrut(10));
         recipeScrollPanel.add(noRecipes);
     }
 
+    private void editRecipe(int recipeIndex) {
+        JFrame editRecipeFrame = new JFrame();
+        editRecipeFrame.setSize(new Dimension(750, 750));
+        editRecipeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        editRecipeFrame.setLocation(750, 0);
+        editRecipeFrame.setResizable(false);
+        editRecipeFrame.setVisible(true);
+
+        editRecipeFrame.add(new GUI_EditPage(listOfRecipes.get(recipeIndex), recipeIndex, () -> updateRecipes()));
+    }
 }

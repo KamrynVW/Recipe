@@ -170,6 +170,11 @@ public class Recipe implements Serializable {
      * @return 1 if recipe contains the ingredient, 0 if not.
      */
     public int doesRecipeContainIngredient(String nameOfIngredient) {
+
+        if(nameOfIngredient.equals("")) {
+            return 0;
+        }
+        
         for(Ingredient item : ingredients) {
 
             if(item.getName().equalsIgnoreCase(nameOfIngredient)) {

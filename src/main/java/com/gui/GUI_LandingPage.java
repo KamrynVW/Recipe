@@ -2,6 +2,7 @@ package com.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 
@@ -39,6 +40,7 @@ public class GUI_LandingPage extends JPanel {
         landPageStart.setAlignmentX(Component.CENTER_ALIGNMENT);
         landPageStart.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 2), new EmptyBorder(10, 20, 10, 20)));
         landPageStart.setFocusPainted(false);
+        landPageStart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         // Creation of spacing between title and button for asthetic purposes
         this.add(Box.createVerticalGlue());
