@@ -52,9 +52,6 @@ public class GUI_BasePage extends JPanel {
         
         // Layout setup
         this.setLayout(new BorderLayout());
-        SwingUtilities.invokeLater(() -> {
-            GUIColorsUtil.bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
-        });
         Border topBarBorder = BorderFactory.createLineBorder(Color.GRAY, 1);
 
         // Creation of top panel including search bar and buttons
@@ -76,7 +73,7 @@ public class GUI_BasePage extends JPanel {
         searchField.setFont(new Font("Dialog", Font.ITALIC, 17));
         searchField.setForeground(Color.WHITE);
         searchField.setBackground(Color.DARK_GRAY);
-        searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
+        searchField.setText("Enter search terms here (between commas with '!' before term to exclude)...");
         searchField.setBorder(topBarBorder);
         searchField.setMaximumSize(new Dimension(7000, 100));
         searchField.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
@@ -84,14 +81,14 @@ public class GUI_BasePage extends JPanel {
         searchField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                if("Enter ingredients here (between commas with '!' before term to exclude)...".equals(searchField.getText()))
+                if("Enter search terms here (between commas with '!' before term to exclude)...".equals(searchField.getText()))
                 searchField.setText("");
             }
 
             @Override
             public void focusLost(FocusEvent e) {
                 if("".equals(searchField.getText())) {
-                    searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
+                    searchField.setText("Enter search terms here (between commas with '!' before term to exclude)...");
                 }
             }
         });
@@ -123,7 +120,7 @@ public class GUI_BasePage extends JPanel {
         newButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         newButton.addActionListener(_ -> {
-            searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
+            searchField.setText("Enter search terms here (between commas with '!' before term to exclude)...");
             updateRecipes();
         });
 
@@ -137,17 +134,16 @@ public class GUI_BasePage extends JPanel {
         settingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         settingsButton.addActionListener(_ -> {
-            searchField.setText("Enter ingredients here (between commas with '!' before term to exclude)...");
+            searchField.setText("Enter search terms here (between commas with '!' before term to exclude)...");
             updateRecipes();
         });
 
         // Add components to sub-panels
         topBarSearch.add(searchField);
-        topBarSearch.add(Box.createHorizontalStrut(2));
         topBarSearch.add(searchButton);
 
         topBarButtons.add(newButton);
-        topBarButtons.add(Box.createHorizontalStrut(3));
+        topBarButtons.add(Box.createHorizontalStrut(2));
         topBarButtons.add(settingsButton);
 
         // Add sub-panels to top bar panel
@@ -267,6 +263,34 @@ public class GUI_BasePage extends JPanel {
 
         recipeScrollPanel.add(listedRecipePanel);
         recipeScrollPanel.add(Box.createVerticalGlue());
+
+        SwingUtilities.invokeLater(() -> {
+            GUIColorsUtil.bindBackgroundToColorManager(this); //Do this later to avoid leaking 'this' in constructor
+
+            // Remove focus from textField when clicking on overall panel to show info text
+            this.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    Component comp = SwingUtilities.getDeepestComponentAt(GUI_BasePage.this, e.getX(), e.getY());
+
+                    if (!(comp instanceof JTextField)) {
+                        requestFocusInWindow(); // takes focus away from text field
+                    }
+                }
+            });
+
+            // Also remove focus to show info text, but for scroll panel instead of overall panel
+            recipeScrollPanel.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    Component comp = SwingUtilities.getDeepestComponentAt(recipeScrollPanel, e.getX(), e.getY());
+
+                    if (!(comp instanceof JTextField)) {
+                        requestFocusInWindow(); // takes focus away from text field
+                    }
+                }
+            });
+        });
     }
 
     public final void updateRecipes() {
@@ -305,18 +329,23 @@ public class GUI_BasePage extends JPanel {
         }
 
         // If the placeholder in search bar ends up as a search, filter it out and replace with nothing
-        if(searchTermsSeparated.size() == 1 & searchTermsSeparated.get(0).equals("Enter ingredients here (between commas with '!' before term to exclude)...")) {
+        if(searchTermsSeparated.size() == 1 & searchTermsSeparated.get(0).equals("Enter search terms here (between commas with '!' before term to exclude)...")) {
             searchTermsSeparated.remove(0);
         }
 
         for(Recipe rec : listOfRecipes) {
             for(String term : searchTermsSeparated) {
-                // If there is a '!', filter the ingredient rather than search for
+                // If there is a '!', filter the term rather than search for
                 if(term.contains("!")) {
-                    showRecipe = rec.doesRecipeContainIngredient(term.substring(1, term.length())) == 0; // Do substring to eliminate '!'
+                    showRecipe = rec.doesRecipeContainIngredient(term.substring(1, term.length())) == 0 && !rec.getName().equalsIgnoreCase(term.substring(1, term.length())); // Do substring to eliminate '!'
                 } else {
                     // Regular recipe search utility
                     showRecipe = rec.doesRecipeContainIngredient(term) == 1 || rec.getName().equalsIgnoreCase(term);
+                }
+
+                // If any term was found to not work, break loop immediately (only useful for >1 search terms)
+                if(!showRecipe) {
+                    break;
                 }
             }
 

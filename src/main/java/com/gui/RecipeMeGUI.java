@@ -38,6 +38,7 @@ public class RecipeMeGUI extends JFrame {
         // General frame setup and addition of main card panel
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(new Dimension(750, 750));
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.add(mainPanel);
 

@@ -89,8 +89,9 @@ public class GUI_CreationPage extends JPanel {
         GUIColorsUtil.bindTextToColorManager(ratingLabel);
 
         // Image Icons for star rating difficulty
-        ImageIcon empty = new ImageIcon("empty_star.png");
-        ImageIcon full = new ImageIcon("full_star.png");
+
+        ImageIcon empty = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("images/empty_star.png"));
+        ImageIcon full = new ImageIcon(ClassLoader.getSystemClassLoader().getResource("images/full_star.png"));
 
         // Identical button creation for each
         JRadioButton oneButton = new JRadioButton();
@@ -184,6 +185,7 @@ public class GUI_CreationPage extends JPanel {
         GUIColorsUtil.bindTextToColorManager(ingredCountLabel);
         ingredCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         ingredPanelHolder.add(ingredCountLabel);
+        ingredPanelHolder.add(Box.createVerticalStrut(9));
 
         // Create panel and buttons for transitions between ingredients
         JPanel ingredPanel = new JPanel();
@@ -288,6 +290,7 @@ public class GUI_CreationPage extends JPanel {
         GUIColorsUtil.bindTextToColorManager(instructionCountLabel);
         instructionCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         instructionPanelHolder.add(instructionCountLabel);
+        instructionPanelHolder.add(Box.createVerticalStrut(9));
 
         // Create panel and buttons for transitions between ingredients
         JPanel instructionPanel = new JPanel();

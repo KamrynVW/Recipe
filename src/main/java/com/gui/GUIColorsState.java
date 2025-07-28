@@ -8,5 +8,4 @@ public class GUIColorsState implements Serializable {
 
     public Color backgroundColor;
     public Color textColor;
-    public Color borderColor;
 }
